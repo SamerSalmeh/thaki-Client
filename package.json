@@ -1,0 +1,50 @@
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "react": "webpack -d --watch"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.23.0",
+    "babel-preset-stage-1": "^6.24.1",
+    "electron": "^2.0.7",
+    "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "@material-ui/core": "^1.5.1",
+    "axios": "^0.18.0",
+    "babel": "^6.23.0",
+    "child_process": "^1.0.2",
+    "css-loader": "^1.0.0",
+    "electron-dl": "^1.12.0",
+    "extract-zip": "^1.6.7",
+    "file-system": "^2.2.2",
+    "fs": "0.0.1-security",
+    "jquery": "^3.1.1",
+    "path": "^0.12.7",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-router-dom": "^4.3.1",
+    "shelljs": "^0.8.2",
+    "style-loader": "^0.21.0",
+    "unzip": "^0.1.11",
+    "url-loader": "^1.0.1"
+  },
+  "proxy": "http://192.168.0.53:3000/"
+}

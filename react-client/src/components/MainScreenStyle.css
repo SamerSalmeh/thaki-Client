@@ -1,0 +1,118 @@
+.main {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('../image/thaki\ background.png');
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: center;
+}
+.update{
+    text-align: center;
+    background-color: #f0f8e4;
+}
+.new{
+    margin: 3%;
+}
+.head{
+    height: 10%;
+    padding: 10px 0;
+}
+.header{
+    margin: 0 !important;
+    height: 100%;
+    padding: 0 7%;
+    width: 100% !important;
+    color: black;
+    font-size: small;
+    text-align: center;
+}
+.header * {
+    padding: 0 !important;
+}
+.search{
+    background-image: url('../image/searchField.png');
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+    background-position:center;
+    width: 100%;
+    height: 28px;
+    border: none;
+    border-radius: 8px;
+    float: right;
+    margin: 4% 0;
+}
+.SearchInput{
+    border: none;
+    border-radius: 8px 0 0 8px;
+    height: 86%;
+    width: 81%;
+    margin: 1%;
+    float: left;
+    background-color:transparent; 
+    text-align: left;
+    color: gray;
+    text-align: left;
+}
+.SearchInput:focus{
+    outline: none;
+}
+p{
+    margin: 5px;
+}
+.SearchIcon{
+    width: 17%;
+    height: 100%;
+    background-image: url('../image/search.png');
+    background-repeat: no-repeat;
+    background-size:80%;
+    background-position:center;
+    background-size: 60%;
+    background-position: center;
+    float: right;
+}
+.filter{
+    background-image: linear-gradient(#b1d67f, #7a992f); 
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 30%;
+    float: right;
+    margin: 4% 0;
+}
+.FilterIcon{
+    width: 100%;
+    height: 100%;
+    background-image: url('../image/filter.png');
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center;
+}
+.apps{
+    margin: 0 !important;
+    padding: 10px;
+    width: 100% !important;
+    color: black;
+    font-size: small;
+    text-align: center;
+}
+.icon{
+    height: 50px;
+    width: 50px;
+}
+.footer {
+    color: black;
+    width: 100%;
+    height: 15%;
+    position: absolute;
+    bottom: 0;
+    background-image: linear-gradient(#b1d67f, #7a992f);
+}
+.foot{
+    margin: 0 !important;
+    height: 100%;
+    padding: 0 7%;
+    width: 100% !important;
+    text-align: center;
+}
