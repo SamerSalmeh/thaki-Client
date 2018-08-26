@@ -13,7 +13,7 @@
     background-color: #f0f8e4;
 }
 .new{
-    margin: 3%;
+    margin: 2%;
 }
 .head{
     height: 10%;
@@ -96,6 +96,9 @@ p{
     color: black;
     font-size: small;
     text-align: center;
+}
+.app{
+    word-wrap: break-word;
 }
 .icon{
     height: 50px;

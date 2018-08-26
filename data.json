@@ -1,5 +1,19 @@
 {
     "app": [
-        
+        {
+            "name": "ndoejs",
+            "image": "/Users/rbk27/Desktop/ndoejs.jpg",
+            "path": "/Users/rbk27/Desktop/ndoejs.jpg"
+        },
+        {
+            "name": "sampleImage.",
+            "image": "/Users/rbk27/Desktop/sampleImage.jpeg",
+            "path": "/Users/rbk27/Desktop/sampleImage.jpeg"
+        },
+        {
+            "name": "SampleVideo(1)",
+            "image": "/Users/rbk27/Desktop/thaki-Client/react-client/src/image/video.png",
+            "path": "/Users/rbk27/Desktop/SampleVideo(1).mp4"
+        }
     ]
 }

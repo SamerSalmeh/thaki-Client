@@ -5,28 +5,31 @@ import { Button, Grid } from '@material-ui/core';
 import { download } from '../../../renderer'
 import axios from 'axios';
 var shell = require('shelljs');
-require('shelljs-plugin-open');
+ require('shelljs-plugin-open');
 export default class MainScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
             alo: [],
             url:'',
-            newdata:[]
+            newdata:[],
+            refresh:false
         }
         this.sendData = this.sendData.bind(this)
         this.open = this.open.bind(this)
     }
     componentWillMount() {
-        axios.get('http://192.168.0.53:3000/api/v1/get/all/objects').then((res) => {
+        axios.get('https://thaki-server-test.herokuapp.com/api/v1/get/all/objects').then((res) => {
             this.setState({
-                alo: res.data
+                alo: res.data,
+                refresh:!this.state.refresh
             })
         })
-        axios.get('/Users/rbk27/Desktop/electron-quick-start/data.json').then((data) => {
+        axios.get('/Users/rbk27/Desktop/thaki-Client/data.json').then((data) => {
             console.log(data.data.app)
             this.setState({
-                newdata: data.data.app
+                newdata: data.data.app,
+                refresh:!this.state.refresh
             })
         })
          
@@ -38,9 +41,12 @@ export default class MainScreen extends Component {
         this.componentWillMount()
     }
     sendData(key)  {
-        axios.post('http://192.168.0.53:3000/api/v1/get/object', { fileName: key})
+        axios.post('https://thaki-server-test.herokuapp.com/api/v1/get/object', { fileName: key})
             .then((res) => {
                download(res.data.url)
+               this.setState({
+                   refresh:!this.state.refresh
+               })
             }).catch((err) => {
                 console.log('err', err)
             })
@@ -51,15 +57,12 @@ export default class MainScreen extends Component {
         })
         :"fetching data ..."
         const dd = this.state.newdata.length?this.state.newdata.map((ele, i) =>{
-            // setTimeout(() => {
-            //     ()=>this.refresh()
-            // }, 3000);
-        return <Grid item xs={2} key={i}>
+        return <Grid  className={style.app} item xs={2} key={i}>
             <img onClick={()=>this.open(ele.path)} className={style.icon} src={ele.image} />
             <br />
             {ele.name}
         </Grid>
-        }):"wait ..."
+        }):"empty"
         return (
             <div className={style.main}>
                 <div className={style.update}>
@@ -77,9 +80,9 @@ export default class MainScreen extends Component {
                         </Grid>
                         <Grid item xs={4}></Grid>
                         <Grid item xs={4}>
-                            <button className={style.filter}>
+                            {/* <button className={style.filter}>
                                 <div className={style.FilterIcon}></div>
-                            </button>
+                            </button> */}
                         </Grid>
                     </Grid>
                 </div>

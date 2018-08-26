@@ -4,7 +4,9 @@
 
 const { ipcRenderer } = require("electron");
 const shell = require('shelljs');
-// const unzip = require('unzip')
+const shellExec = require('shell-exec')
+require('shelljs-plugin-open');
+// shellExec(['open /Users/rbk27/Desktop/uploadTest.zip'])
 // var request = require('../../Library/Caches/typescript/2.9/node_modules/@types/request');
 var fs = require('fs');
 import axios from "axios"
@@ -35,25 +37,30 @@ export const download = function (urll) {
         //     }
         //     // extraction is complete. make sure to handle the err
         // })
+
         // shell.open(file)
-        var newApp={
-            "name":file.replace(/^.*[\\\/]/, '').slice(0, -4),
-            "image":file,
-            "path":file
+        var newApp = {
+            "name": file.replace(/^.*[\\\/]/, '').slice(0, -4),
+            "image": file,
+            "path": file
+        }
+        if(file.slice(-3)==='mp4'){
+            newApp.image="/Users/rbk27/Desktop/thaki-Client/react-client/src/image/video.png"
         }
 
-        fs.readFile('data.json', 'utf8', function readFileCallback(err, data){
-            if (err){
+        fs.readFile('data.json', 'utf8', function readFileCallback(err, data) {
+            if (err) {
                 throw err;
             } else {
-            var obj = JSON.parse(data); //now it an object
-            obj.app.push(newApp); //add some data
-            var json = JSON.stringify(obj, null, 4); //convert it back to json
-            fs.writeFile('data.json', json, 'utf8', function(err) {
-                if (err) throw err;
-                console.log('complete');
-              }); // write it back 
-        }});
+                var obj = JSON.parse(data); //now it an object
+                obj.app.push(newApp); //add some data
+                var json = JSON.stringify(obj, null, 4); //convert it back to json
+                fs.writeFile('data.json', json, 'utf8', function (err) {
+                    if (err) throw err;
+                    console.log('complete');
+                }); // write it back 
+            }
+        });
 
         // fs.createReadStream(file)
         //     .pipe(unzip.Parse())

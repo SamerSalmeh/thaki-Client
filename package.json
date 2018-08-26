@@ -41,7 +41,9 @@
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-router-dom": "^4.3.1",
+    "shell-exec": "^1.0.1",
     "shelljs": "^0.8.2",
+    "shelljs-plugin-open": "^0.2.0",
     "style-loader": "^0.21.0",
     "unzip": "^0.1.11",
     "url-loader": "^1.0.1"
