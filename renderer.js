@@ -45,7 +45,7 @@ export const download = function (urll) {
             "path": file
         }
         if(file.slice(-3)==='mp4'){
-            newApp.image="/Users/rbk27/Desktop/thaki-Client/react-client/src/image/video.png"
+            newApp.image="../../react-client/src/image/video.png"
         }
 
         fs.readFile('data.json', 'utf8', function readFileCallback(err, data) {

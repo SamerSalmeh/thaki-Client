@@ -25,7 +25,7 @@ export default class MainScreen extends Component {
                 refresh:!this.state.refresh
             })
         })
-        axios.get('/Users/rbk27/Desktop/thaki-Client/data.json').then((data) => {
+        axios.get('../../data.json').then((data) => {
             console.log(data.data.app)
             this.setState({
                 newdata: data.data.app,
