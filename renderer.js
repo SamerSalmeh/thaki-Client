@@ -4,17 +4,40 @@
 
 const { ipcRenderer } = require("electron");
 const shell = require('shelljs');
-const shellExec = require('shell-exec')
-require('shelljs-plugin-open');
+// const shellExec = require('shell-exec')
+// require('shelljs-plugin-open');
 // shellExec(['open /Users/rbk27/Desktop/uploadTest.zip'])
-// var request = require('../../Library/Caches/typescript/2.9/node_modules/@types/request');
+// var request = require('request');
 var fs = require('fs');
 import axios from "axios"
 // var extract = require("extract")
 
 
 // import { unzip } from 'adm-zip'
+export const deleteFile = function (file,id) {
+    fs.unlink(file, (err) => {
+        if (err){
+             throw err;
+        }else{
+            console.log(file + ' was deleted');
 
+            fs.readFile('data.json', 'utf8', function readFileCallback(err, data) {
+                if (err) {
+                    throw err;
+                } else {
+                    var obj = JSON.parse(data); //now it an object
+                    var index = obj.app.indexOf(id)
+                    obj.app.splice(index,1); //add some data
+                    var json = JSON.stringify(obj, null, 4); //convert it back to json
+                    fs.writeFile('data.json', json, 'utf8', function (err) {
+                        if (err) throw err;
+                        console.log('complete');
+                    }); // write it back 
+                }
+            });
+        }
+    });
+}
 
 
 export const download = function (urll) {

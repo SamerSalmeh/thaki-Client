@@ -99,6 +99,7 @@ p{
 }
 .app{
     word-wrap: break-word;
+    max-width: 100% !important;
 }
 .icon{
     height: 50px;

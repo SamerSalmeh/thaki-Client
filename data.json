@@ -1,14 +1,10 @@
 {
     "app": [
-        {
-            "name": "fewef.",
-            "image": "/home/thaki/Desktop/fewef.jpeg",
-            "path": "/home/thaki/Desktop/fewef.jpeg"
-        },
-        {
+
+        {   "id": "0",
             "name": "SampleVideo(1)",
             "image": "../../react-client/src/image/video.png",
-            "path": "/home/thaki/Desktop/SampleVideo(1).mp4"
+            "path": "/Users/rbk27/Desktop/Terminal Saved Output"
         }
     ]
 }

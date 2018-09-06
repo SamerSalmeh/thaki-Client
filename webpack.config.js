@@ -9,7 +9,6 @@ module.exports = {
     path: DIST_DIR
   },
   target: 'electron-renderer',
-
   module: {
     loaders: [
 
@@ -33,7 +32,11 @@ module.exports = {
         include: SRC_DIR,
         loader: 'babel-loader',
         query: {
-          presets: ['react', 'es2015',]
+          presets: [
+            ["es2015", { "modules": false, "loose": true }],
+            "react",
+            "stage-0"
+          ],
         }
       }
     ],
