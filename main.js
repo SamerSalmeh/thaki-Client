@@ -6,7 +6,7 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 550})
+  mainWindow = new BrowserWindow({width: 800, height: 550,icon: './react-client/src/image/thakiLogo.png'})
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
