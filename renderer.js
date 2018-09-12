@@ -52,7 +52,7 @@ export const download = function (urll) {
     });
 
     ipcRenderer.on("download complete", (event, file) => {
-        alert("Your download is complete");
+        
         // extract(file, { dir: '/Users/rbk27/Desktop/' }, function (err) {
         //     if (err) {
         //         console.log(err)
@@ -64,12 +64,14 @@ export const download = function (urll) {
         var newApp = {
             "name": file.replace(/^.*[\\\/]/, '').slice(0, -4),
             "image": '../../react-client/app/' + file.replace(/^.*[\\\/]/, ''),
-            "path": '../../react-client/app/' + file.replace(/^.*[\\\/]/, ''),
+            "path": './react-client/app/' + file.replace(/^.*[\\\/]/, ''),
         }
-        if(file.slice(-3)==='mp4'){
-            newApp.image="../../react-client/src/image/video.png"
+        if (file.slice(-3) === 'mp4') {
+            newApp.image = "../../react-client/src/image/video.png"
+        } else if (file.slice(-3) === 'txt') {
+            newApp.image = "../../react-client/src/image/text.png"
         }
-
+        
         fs.readFile('data.json', 'utf8', function readFileCallback(err, data) {
             if (err) {
                 throw err;
@@ -81,11 +83,11 @@ export const download = function (urll) {
                 var json = JSON.stringify(obj, null, 4); //convert it back to json
                 fs.writeFile('data.json', json, 'utf8', function (err) {
                     if (err) throw err;
-                    console.log('complete');
+                    
                 }); // write it back 
             }
         });
-
+        
         // fs.createReadStream(file)
         //     .pipe(unzip.Parse())
         //     .on('entry', function (entry) {

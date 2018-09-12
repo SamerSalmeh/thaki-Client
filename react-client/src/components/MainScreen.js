@@ -69,7 +69,7 @@ export default class MainScreen extends Component {
         })
     }
 
-    delete(filePath, id, i) {
+    delete(filePath, id) {
         
         const x = {
             filePath,
@@ -171,8 +171,8 @@ export default class MainScreen extends Component {
         const dd = this.state.newdata.length
             ? this.state.newdata.map((ele, i) => {
                 return (
-                    <DragDropContainer id={i} ref='toggle'
-                        onDrop={() => this.dropped(ele.path, ele.id, i)}
+                    <DragDropContainer
+                        onDrop={() => this.dropped(ele.path, ele.id)}
                         targetKey="delete" key={i}>
                         <Grid className={style.app} item xs={2} >
                             <img
@@ -219,7 +219,7 @@ export default class MainScreen extends Component {
                 </div>
                 <div className={style.footer}>
                     <Grid className={style.foot} container spacing={24}>
-                        <Grid item xs={3}>
+                         <Grid item xs={3}>
                             {/* <a href="">
   <img src="../src/image/home.png" />
 </a>*/}
@@ -230,9 +230,9 @@ export default class MainScreen extends Component {
 </a>*/}
                         </Grid>
                         <Grid item xs={3}>
-                            <a href="#" onClick={this.refresh.bind(this)}>
+                            {/* <a href="#" onClick={this.refresh.bind(this)}>
                                 <img src="../src/image/update.png" />
-                            </a>
+                            </a>*/}
                         </Grid>
                         <Grid item xs={3}>
                             <DropTarget targetKey="delete"
