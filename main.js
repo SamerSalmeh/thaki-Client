@@ -1,8 +1,7 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain} = require('electron')
-const {download} = require("electron-dl");
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+const { download } = require("electron-dl");
+
 let mainWindow
 
 function createWindow () {
@@ -11,14 +10,12 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-  //mainWindow.setMenu(null)
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
 
+  /*mainWindow.setMenu(null)*/
+ 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
+
     // when you should delete the corresponding element.
     mainWindow = null
   })
@@ -27,14 +24,17 @@ function createWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready',()=>{
-  createWindow()
-  ipcMain.on("download", (event, info) => {
-    //info.properties = status => mainWindow.webContents.send("download progress", status);
-    download(BrowserWindow.getFocusedWindow(), info.url, info.properties)
-        .then(dl => mainWindow.webContents.send("download complete", dl.getSavePath()));
-});
-} )
+app.on('ready', () => {
+
+    createWindow()
+    //receive the url and the directory from render.js using key "download" and download the file
+    //and resend the path of that file in the user device using key "download complete"
+    ipcMain.on("download", (event, info) => {
+        download(BrowserWindow.getFocusedWindow(), info.url, info.properties).then(
+            newPath => mainWindow.webContents.send("download complete", newPath.getSavePath())
+        );
+    });
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -52,6 +52,7 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+// Rename the application (Overwrite)
 app.setName("Thaki")
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+

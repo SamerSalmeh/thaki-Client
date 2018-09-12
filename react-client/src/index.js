@@ -10,7 +10,6 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: []
     }
   }
 
@@ -18,7 +17,8 @@ class App extends React.Component {
     return (
       <HashRouter>
         <Switch>
-                <Route path="/" component={MainScreen} />
+          {/*Make the first page is MainScreen*/}
+          <Route path="/" component={MainScreen} />
           <Route path="/MainScreen" component={MainScreen} />
         </Switch>
       </HashRouter>
