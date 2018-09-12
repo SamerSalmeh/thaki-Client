@@ -1,0 +1,21 @@
+.root{
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    align-items: center;
+    display: grid;
+}
+.gender{
+    padding-right: 8% !important;
+    display: block !important;
+}
+.genderImage   {
+    width:50%;
+    height:50%;
+}
+.genderIcon{
+    visibility: hidden;
+}
+.stepIconColor svg{
+    color:#7a992f !important;
+}

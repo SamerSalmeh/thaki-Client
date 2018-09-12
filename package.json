@@ -1,5 +1,5 @@
 {
-  "name": "electron-quick-start",
+  "name": "thaki",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
@@ -8,13 +8,6 @@
     "react": "webpack -d --watch"
   },
   "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
@@ -51,6 +44,5 @@
     "style-loader": "^0.21.0",
     "unzip": "^0.1.11",
     "url-loader": "^1.0.1"
-  },
-  "proxy": "http://192.168.0.53:3000/"
+  }
 }

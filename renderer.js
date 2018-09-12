@@ -45,15 +45,14 @@ export const download = function (urll) {
 
     ipcRenderer.send("download", {
         url: urll,
-        // url: "http://releases.ubuntu.com/12.04.5/ubuntu-12.04.5-alternate-amd64.iso",
         properties: {
-            saveAs: true
-            // directory: "Users/rbk27/Desktop/electron-quick-start/app/"
+            //saveAs: true
+             directory: "./react-client/app/"
         }
     });
 
     ipcRenderer.on("download complete", (event, file) => {
-        console.log("complete ", file);
+        alert("Your download is complete");
         // extract(file, { dir: '/Users/rbk27/Desktop/' }, function (err) {
         //     if (err) {
         //         console.log(err)
@@ -64,8 +63,8 @@ export const download = function (urll) {
         // shell.open(file)
         var newApp = {
             "name": file.replace(/^.*[\\\/]/, '').slice(0, -4),
-            "image": file,
-            "path": file
+            "image": '../../react-client/app/' + file.replace(/^.*[\\\/]/, ''),
+            "path": '../../react-client/app/' + file.replace(/^.*[\\\/]/, ''),
         }
         if(file.slice(-3)==='mp4'){
             newApp.image="../../react-client/src/image/video.png"
@@ -76,6 +75,8 @@ export const download = function (urll) {
                 throw err;
             } else {
                 var obj = JSON.parse(data); //now it an object
+                newApp.id = obj.app.length
+                console.log(newApp)
                 obj.app.push(newApp); //add some data
                 var json = JSON.stringify(obj, null, 4); //convert it back to json
                 fs.writeFile('data.json', json, 'utf8', function (err) {

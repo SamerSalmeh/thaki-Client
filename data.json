@@ -1,10 +1,4 @@
 {
     "app": [
-
-        {   "id": "0",
-            "name": "SampleVideo(1)",
-            "image": "../../react-client/src/image/video.png",
-            "path": "/Users/rbk27/Desktop/Terminal Saved Output"
-        }
     ]
 }
