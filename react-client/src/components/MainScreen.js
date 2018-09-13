@@ -32,7 +32,7 @@ export default class MainScreen extends Component {
       serverData: [],
       open: false,
       newdata: [],
-      found: false,
+      rights: false,
       src: "../src/image/trashCan.png",
       spaceUsed: false,
       pathStore: "",
@@ -94,7 +94,7 @@ export default class MainScreen extends Component {
 
     //get server data
     axios
-      .get("http://192.168.0.58:3000/api/v1/get/all/objects")
+      .get("http://192.168.1.45:3000/api/v1/get/all/objects")
       .then(res => {
         this.setState({
           serverData: res.data,
@@ -110,19 +110,27 @@ export default class MainScreen extends Component {
     this.setState({ spaceUsed: true });
   };
 
+  // function to open announcement Dialog about file rights
+  rightDialog = (key) => {
+    this.setState({ rights: true,pathStore:key });
+  };
+
   //function to close all Dialogs
   handleClose = () => {
-    this.setState({ open: false, spaceUsed: false });
+    this.setState({ open: false, spaceUsed: false ,rights:false});
   };
 
   // function to reqest dawnload path from server
-  sendData(key) {
-    console.log("connecting to the server .....");
+  sendData() {
+    console.log("connecting to the server .....",this.state.pathStore);
     axios
-      .post("http://192.168.0.58:3000/api/v1/get/object", {
-        fileName: key,
+      .post("http://192.168.1.45:3000/api/v1/get/object", {
+        fileName: this.state.pathStore,
       })
       .then(res => {
+
+        this.handleClose();
+
         //get the size of file that user want to download
         const { objectSize } = res.data;
 
@@ -158,7 +166,7 @@ export default class MainScreen extends Component {
               <button
                 className={style.new}
                 key={i}
-                onClick={() => this.sendData(ele.Key)}
+                onClick={() => this.rightDialog(ele.Key)}
               >
                 {data}
               </button>
@@ -288,6 +296,64 @@ export default class MainScreen extends Component {
           <DialogActions>
             <button onClick={this.handleClose.bind(this)} color="primary">
               got it
+            </button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={this.state.rights}
+          onClose={this.handleClose.bind(this)}
+          aria-labelledby="scroll-dialog-title"
+        >
+          <DialogTitle id="scroll-dialog-title">
+            {"Rights"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac
+              facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum
+              at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus
+              sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum
+              nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur
+              et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras
+              mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+              egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+              lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
+              sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+              Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
+              consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+              egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+              lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
+              sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+              Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
+              consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+              egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+              lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
+              sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+              Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
+              consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+              egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+              lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
+              sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+              Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
+              consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+              egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+              lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
+              sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+              Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <button onClick={this.handleClose.bind(this)} color="primary">
+              Cancel
+            </button>
+            <button onClick={this.sendData.bind(this)} color="primary" autoFocus>
+              I'm sure
             </button>
           </DialogActions>
         </Dialog>
