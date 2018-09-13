@@ -1,17 +1,19 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { DragDropContainer, DropTarget } from "react-drag-drop-container";
+import SearchInput, {createFilter} from 'react-search-input'
 
 import { download, deleteFile } from "../../../renderer";
 import style from "./MainScreenStyle.css";
 
 //importing react material ui
-import { Grid } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button"; 
 
 var shell = require("shelljs");
 require("shelljs-plugin-open");
@@ -25,6 +27,9 @@ ds.diskSpace(function(err, res) {
   console.log(res.total.free);
 });
 
+//you can add key of what you search for like : by name, by path
+const KEYS_TO_FILTERS = ['name']
+
 export default class MainScreen extends Component {
   constructor(props) {
     super(props);
@@ -32,12 +37,14 @@ export default class MainScreen extends Component {
       serverData: [],
       open: false,
       newdata: [],
+      searchTerm: '',
       rights: false,
       src: "../src/image/trashCan.png",
       spaceUsed: false,
       pathStore: "",
       path: 0,
     };
+    this.searchUpdated = this.searchUpdated.bind(this)
     this.sendData = this.sendData.bind(this);
     this.open = this.open.bind(this);
     this.dropped = this.dropped.bind(this);
@@ -94,7 +101,7 @@ export default class MainScreen extends Component {
 
     //get server data
     axios
-      .get("http://192.168.1.45:3000/api/v1/get/all/objects")
+      .get("https://afternoon-anchorage-52422.herokuapp.com/api/v1/get/all/objects")
       .then(res => {
         this.setState({
           serverData: res.data,
@@ -120,11 +127,16 @@ export default class MainScreen extends Component {
     this.setState({ open: false, spaceUsed: false ,rights:false});
   };
 
+  searchUpdated (term) {
+    console.log(term)
+    this.setState({searchTerm: term})
+  }
+
   // function to reqest dawnload path from server
   sendData() {
     console.log("connecting to the server .....",this.state.pathStore);
     axios
-      .post("http://192.168.1.45:3000/api/v1/get/object", {
+      .post("https://afternoon-anchorage-52422.herokuapp.com/api/v1/get/object", {
         fileName: this.state.pathStore,
       })
       .then(res => {
@@ -147,6 +159,10 @@ export default class MainScreen extends Component {
   }
 
   render() {
+    // search process
+    const search = this.state.newdata.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
+    
+    // return files of server to the user screen as buttons
     const serverContent = this.state.serverData.length
       ? this.state.serverData.map((ele, i) => {
           //get the raw name from server
@@ -174,45 +190,44 @@ export default class MainScreen extends Component {
           }
         })
       : "fetching data ...";
-
+     
+      // return files of JSON file to the user screen as images
     const installedApp = this.state.newdata.length
-      ? this.state.newdata.map((ele, i) => {
-          return (
+      ?  search.map(file => {
+        return (
             <DragDropContainer
-              onDrop={() => this.dropped(ele.path)}
+              onDrop={() => this.dropped(file.path)}
               targetKey="delete"
-              key={i}
+              key={file.name}
             >
               <Grid className={style.app} item xs={2}>
                 <img
-                  onClick={() => this.open(ele.path)}
+                  onClick={() => this.open(file.path)}
                   className={style.icon}
-                  src={ele.image}
+                  src={file.image}
                 />
                 <br />
-                {ele.name}
+                {file.name}
               </Grid>
             </DragDropContainer>
-          );
-        })
+        )
+      })
       : "empty";
+      
     return (
       <div className={style.main}>
         <div className={style.serverContent}>{serverContent}</div>
+        
         <div className={style.head}>
           <Grid className={style.header} container spacing={24}>
             <Grid item xs={4}>
-              {/*<div className={style.search}>
-      <input
-      className={style.SearchInput}
-      type="text"
-      placeholder="Search ..."
-      />
+             <div className={style.search}>
+      <SearchInput className={style.SearchInput} onChange={this.searchUpdated} />
       <a href="#">
       <div className={style.SearchIcon} />
       </a>
       </div>
-    */}{" "}
+    
             </Grid>
             <Grid item xs={4} />
             <Grid item xs={4}>
@@ -222,11 +237,13 @@ export default class MainScreen extends Component {
             </Grid>
           </Grid>
         </div>
+
         <div>
           <Grid className={style.apps} container spacing={24}>
             {installedApp}
           </Grid>
         </div>
+
         <div className={style.footer}>
           <Grid className={style.foot} container spacing={24}>
             <Grid item xs={3}>
@@ -270,12 +287,12 @@ export default class MainScreen extends Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <button onClick={this.handleClose.bind(this)} color="primary">
+            <Button onClick={this.handleClose.bind(this)} color="primary">
               Cancel
-            </button>
-            <button onClick={this.delete.bind(this)} color="primary" autoFocus>
+            </Button>
+            <Button onClick={this.delete.bind(this)} color="primary" autoFocus>
               I'm sure
-            </button>
+            </Button>
           </DialogActions>
         </Dialog>
 
@@ -294,9 +311,9 @@ export default class MainScreen extends Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <button onClick={this.handleClose.bind(this)} color="primary">
+            <Button onClick={this.handleClose.bind(this)} color="primary">
               got it
-            </button>
+            </Button>
           </DialogActions>
         </Dialog>
 
@@ -349,12 +366,12 @@ export default class MainScreen extends Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <button onClick={this.handleClose.bind(this)} color="primary">
+            <Button onClick={this.handleClose.bind(this)} color="primary">
               Disagree
-            </button>
-            <button onClick={this.sendData.bind(this)} color="primary" autoFocus>
+            </Button>
+            <Button onClick={this.sendData.bind(this)} color="primary" autoFocus>
               Agree
-            </button>
+            </Button>
           </DialogActions>
         </Dialog>
       </div>

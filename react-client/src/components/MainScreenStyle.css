@@ -44,16 +44,26 @@
     margin: 4% 0;
 }
 .SearchInput{
-    border: none;
-    border-radius: 8px 0 0 8px;
-    height: 86%;
-    width: 81%;
-    margin: 1%;
-    float: left;
+    border-radius: 8px 0 0 8px !important;
+    height: 86% !important;
+    width: 81% !important;
+    margin: 1% !important;
+    float: left !important;
     background-color:transparent; 
-    text-align: left;
-    color: gray;
-    text-align: left;
+}
+input:focus{
+    outline: none;
+}
+.SearchInput input{
+    border: none !important;
+    border-radius: 8px 0 0 8px !important;
+    height: 100% !important;
+    width: 100% !important;
+    float: left !important;
+    background-color:transparent; 
+    text-align: left !important;
+    color: gray !important;
+    margin-left: 3%;
 }
 .SearchInput:focus{
     outline: none;
