@@ -350,10 +350,10 @@ export default class MainScreen extends Component {
           </DialogContent>
           <DialogActions>
             <button onClick={this.handleClose.bind(this)} color="primary">
-              Cancel
+              Disagree
             </button>
             <button onClick={this.sendData.bind(this)} color="primary" autoFocus>
-              I'm sure
+              Agree
             </button>
           </DialogActions>
         </Dialog>
