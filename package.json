@@ -43,6 +43,7 @@
     "shelljs": "^0.8.2",
     "shelljs-plugin-open": "^0.2.0",
     "style-loader": "^0.21.0",
+    "sudo-prompt": "^8.2.3",
     "unzip": "^0.1.11",
     "url-loader": "^1.0.1"
   }
