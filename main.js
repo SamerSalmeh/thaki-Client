@@ -1,18 +1,18 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain} = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const { download } = require("electron-dl");
 
 let mainWindow
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 550,icon: './react-client/src/image/thakiLogo.png'})
+  mainWindow = new BrowserWindow({ icon: './react-client/src/image/thakiLogo.png' })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+  mainWindow.maximize()
+  // mainWindow.setMenu(null)
 
-  /*mainWindow.setMenu(null)*/
- 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
 
@@ -24,17 +24,42 @@ function createWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+var f = ""
+var g = ""
 app.on('ready', () => {
 
-    createWindow()
-    //receive the url and the directory from render.js using key "download" and download the file
-    //and resend the path of that file in the user device using key "download complete"
-    ipcMain.on("download", (event, info) => {
-        download(BrowserWindow.getFocusedWindow(), info.url, info.properties).then(
-            newPath => mainWindow.webContents.send("download complete", newPath.getSavePath())
-        );
-    });
+  createWindow()
+  //receive the url and the directory from render.js using key "download" and download the file
+  //and resend the path of that file in the user device using key "download complete"
+  ipcMain.on("download", (event, info) => {
+    f = info.url
+    g = info.properties
+    // info.properties= function status() {
+    // mainWindow.webContents.send("download progress", status);
+    // console.log("send")
+    // }
+    download(BrowserWindow.getFocusedWindow(), info.url, info.properties)
+  });
+  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    // Set the save path, making Electron not to prompt a save dialog.
+    console.log("am here")
+    item.setSavePath("./react-client/app/")
+
+    item.on('updated', (event, state) => {
+      if (state === 'interrupted') {
+        console.log('Download is interrupted but can be resumed')
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log('Download is paused')
+        } else {
+          mainWindow.webContents.send("download progress", item.getReceivedBytes());
+          //console.log(`Received bytes: ${item.getReceivedBytes()}`)
+        }
+      }
+    })
+  })
 })
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

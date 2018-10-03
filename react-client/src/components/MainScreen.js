@@ -1,108 +1,192 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { DragDropContainer, DropTarget } from "react-drag-drop-container";
+import { DragDropContainer } from "react-drag-drop-container";
 import SearchInput, { createFilter } from 'react-search-input'
+import PropTypes from 'prop-types';
 
-import { download, deleteFile } from "../../../renderer";
+import { openFile, Zero } from "../../../renderer";
 import style from "./MainScreenStyle.css";
+import ServerContents from "./ServerContents";
+import Footer from "./Footer";
+import MailFolderListItems from './menu';
+import Background from '../image/background.png';
+
+import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
 //importing react material ui
 import Grid from "@material-ui/core/Grid";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
-
-var shell = require("shelljs");
-require("shelljs-plugin-open");
-var ds = require("fd-diskspace");
-var sudo = require('sudo-prompt');
-
-var options = {
-  name: 'Electron',
-  icns: '../image/thakiLogo.png', // (optional)
-};
-var freeSpace;
-// Async
-ds.diskSpace(function (err, res) {
-  if (err) throw err;
-  freeSpace = res.total.free;
-  console.log(res.total.free);
-});
-
+import Drawer from '@material-ui/core/Drawer';
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Chip from '@material-ui/core/Chip';
+import DoneIcon from '@material-ui/icons/Done';
 //you can add key of what you search for like : by name, by path
-const KEYS_TO_FILTERS = ['name', 'path', 'kind']
+const KEYS_TO_FILTERS = ['name', 'categorie', 'tag']
 
-export default class MainScreen extends Component {
+const drawerWidth = 240;
+
+const styles = theme => ({
+  root: {
+    backgroundImage: `url(${Background})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '100%',
+    backgroundPosition: 'bottom',
+    flexGrow: 1,
+    height: 600,
+    overflow: "hidden",
+    position: "relative",
+    display: "flex"
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  menuButton: {
+    marginLeft: 12,
+    marginRight: 36
+  },
+  hide: {
+    display: "none"
+  },
+  drawerPaper: {
+    height: '322px',
+    overflow: "hidden",
+    position: "relative",
+    whiteSpace: "nowrap",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  drawerPaperClose: {
+    overflowX: "hidden",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    width: theme.spacing.unit * 7,
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing.unit * 9
+    }
+  },
+  tags: {
+    overflow: "hidden",
+    position: "relative",
+    whiteSpace: "nowrap",
+    textAlign: "center",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  tag: {
+  },
+  tagsButton: {
+    width: 100,
+    height: 0,
+    display: "inline-block",
+    borderLeft: "50px solid transparent",
+    borderRight: "50px solid transparent",
+    borderBottom: "30px solid #f0f8e4",
+    transition: theme.transitions.create(["height", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  tagsButtonShift: {
+    transition: theme.transitions.create(["margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing.unit * 3
+  }
+});
+class MainScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      serverData: [],
-      open: false,
       newdata: [],
+      bottom: false,
       searchTerm: '',
       filter: '',
-      rights: false,
-      src: "../src/image/trashCan.png",
-      spaceUsed: false,
-      pathStore: "",
-      path: 0,
+      drawerOpen: false,
+      newarr: [],
+      tagArr: []
     };
     this.searchUpdated = this.searchUpdated.bind(this)
-    this.sendData = this.sendData.bind(this);
     this.open = this.open.bind(this);
     this.dropped = this.dropped.bind(this);
+    this.toggleTagsDrawer = this.toggleTagsDrawer.bind(this);
+    this.hh = this.hh.bind(this);
   }
 
   componentWillMount() {
     // make refresh every two seconds
-    setInterval(this.refresh.bind(this), 2000);
+    setInterval(this.refresh.bind(this), 1000);
   }
 
   // function to open file in device directly by path
   open(path) {
-    shell.open(path);
+    openFile(path);
   }
 
-  //two function to change Trash can Icon
-  changeTrashIconOnHover() {
+  toggleTagsDrawer() {
     this.setState({
-      src: "../src/image/openTrashCan.png",
+      bottom: !this.state.bottom,
     });
-  }
-  changeTrashIconOnOut() {
-    this.setState({
-      src: "../src/image/trashCan.png",
-    });
-  }
+    this.hh()
+  };
 
-  //function to open Dialog after drop file in trash icon
+  handleDrawerOpen = () => {
+    console.log("gg")
+    this.setState({ drawerOpen: true });
+  };
+
+  handleDrawerClose = () => {
+    console.log("jj")
+    this.setState({ drawerOpen: false });
+  };
+
+  //function to pass path of file to Footer to delete it
   dropped(path) {
-    this.setState({
-      pathStore: path,
-      open: true,
-      src: "../src/image/trashCan.png",
-    });
-  }
- 
-  //this function send the path of file to delete function in render.js to remove it
-  delete() {
-    var file = this.state.pathStore
-    sudo.exec('echo hello', options,
-      function (error, stdout, stderr) {
-        if (error) console.log("delete have been failed becuse ",error);
-    deleteFile(file);
-      }
-    );
-     this.handleClose();
+    this.refs.footer.dropped(path)
   }
 
   //this function hold two api ... one to get data from server and one to get data from JSON file
   //and it refreshing every two seconds
   refresh() {
-    console.log("refresh");
+    console.log("Refresh");
 
     // get JSON file date
     axios.get("../../data.json").then(data => {
@@ -111,109 +195,70 @@ export default class MainScreen extends Component {
       });
     });
 
-    //get server data
-    axios
-      .get("https://afternoon-anchorage-52422.herokuapp.com/api/v1/get/all/objects")
-      .then(res => {
-        this.setState({
-          serverData: res.data,
-        });
-      })
-      .catch(err => {
-        console.log("err", err);
-      });
+    // axios.get("https://afternoon-anchorage-52422.herokuapp.com/api/v1/click/analytics",this.state.newdata)
+    //   .then(res => {
+    //     Zero()
+    //   })
+    //   .catch(err => {
+    //     console.log("err", err);
+    //   })
   }
-
-  // function to open announcement Dialog about space used
-  spaceUsedOpen = () => {
-    this.setState({ spaceUsed: true });
-  };
-
-  // function to open announcement Dialog about file rights
-  rightDialog = (key) => {
-    this.setState({ rights: true, pathStore: key });
-  };
-
-  //function to close all Dialogs
-  handleClose = () => {
-    this.setState({ open: false, spaceUsed: false, rights: false });
-  };
+  hh() {
+    var g = []
+    this.state.newdata.map((el, i) => {
+      el.tag.map((ele, index) => {
+        if (!g.includes(ele)) {
+          g.push(ele)
+        }
+      })
+    })
+    this.setState({ newarr: g })
+  }
 
   searchUpdated(term) {
     console.log(term)
     this.setState({ searchTerm: term })
   }
 
-  // function to reqest dawnload path from server
-  sendData() {
-    console.log("connecting to the server .....", this.state.pathStore);
-    axios
-      .post("https://afternoon-anchorage-52422.herokuapp.com/api/v1/get/object", {
-        fileName: this.state.pathStore,
+  cheakTag(e, tag) {
+    if (!this.state.tagArr.includes(tag)) {
+      if (e.currentTarget.tagName === "svg") {
+        e.target.style.border = "2px solid green"
+      } else {
+        e.currentTarget.parentElement.style.border = "2px solid green"
+      }
+      this.setState({
+        tagArr: [...this.state.tagArr, tag]
       })
-      .then(res => {
-
-        this.handleClose();
-
-        //get the size of file that user want to download
-        const { objectSize } = res.data;
-
-        //if there free space in the user device will download ... if not it will open Dialog
-        if (objectSize < freeSpace) {
-          download(res.data.url);
-        } else {
-          this.spaceUsedOpen();
-        }
+    } else {
+      e.target.style.border = "0px solid green"
+      const tagIndex = this.state.tagArr.indexOf(tag)
+      var array = [...this.state.tagArr]
+      array.splice(tagIndex, 1)
+      this.setState({
+        tagArr: array
       })
-      .catch(err => {
-        console.log("err", err);
-      });
+    }
   }
 
+  searchTag() {
+    // const f = this.state.tagArr.toString()
+    this.searchUpdated(this.state.tagArr.join(" "))
+  }
   render() {
+    const { classes, theme } = this.props;
     // search process
     const search = this.state.newdata.filter(createFilter(this.state.searchTerm, KEYS_TO_FILTERS))
-
-
-    // return files of server to the user screen as buttons
-    const serverContent = this.state.serverData.length
-      ? this.state.serverData.map((ele, i) => {
-        //get the raw name from server
-        var data = ele.Key.replace(/^.*[\\\/]/, "").slice(0, -4);
-
-        //check if the file exist or not
-        var found = false;
-
-        this.state.newdata.map((dataEle, index) => {
-          if (data === dataEle.name) {
-            found = true;
-          }
-        });
-
-        if (found === false) {
-          return (
-            <button
-              className={style.new}
-              key={i}
-              onClick={() => this.rightDialog(ele.Key)}
-            >
-              {data}
-            </button>
-          );
-        }
-      })
-      : "fetching data ...";
 
     // return files of JSON file to the user screen as images
     const installedApp = this.state.newdata.length
       ? search.map(file => {
         return (
-          <DragDropContainer
-            onDrop={() => this.dropped(file.path)}
-            targetKey="delete"
-            key={file.name}
-          >
-            <Grid className={style.app} item xs={2}>
+          <Grid className={style.app} item xs={2} key={file.name}>
+            <DragDropContainer
+              onDrop={() => this.dropped(file.path)}
+              targetKey="delete"
+            >
               <img
                 onClick={() => this.open(file.path)}
                 className={style.icon}
@@ -221,172 +266,114 @@ export default class MainScreen extends Component {
               />
               <br />
               {file.name}
-            </Grid>
-          </DragDropContainer>
+            </DragDropContainer>
+          </Grid>
         )
       })
       : "empty";
+    const ff = this.state.newarr.map((ele, index) => {
 
+      return (
+        <Chip
+          deleteIcon={<DoneIcon />}
+          key={index}
+          label={ele}
+          // onClick={(e) => this.addTag(e, ele)}
+          onDelete={(e) => this.cheakTag(e, ele)}
+          className={style.new}
+        />
+        // <button
+        //   key={index}
+        //   className={style.new}
+        //   onClick={() => this.searchUpdated(ele)}
+        // >
+        //   {ele}
+        // </button>
+      )
+    })
     return (
       <div className={style.main}>
-        <div className={style.serverContent}>{serverContent}</div>
 
-        <div className={style.head}>
-          <Grid className={style.header} container spacing={24}>
-            <Grid item xs={4}>
+        <ServerContents pass={this.state.newdata} />
+
+        <div className={classes.root}>
+          <AppBar
+            style={{ background: '#7ba330', boxShadow: 'none' }}
+            position="absolute"
+            className={classNames(
+              classes.appBar,
+              this.state.drawerOpen && classes.appBarShift
+            )}
+          >
+            <Toolbar disableGutters={!this.state.drawerOpen}>
+              <IconButton
+                color="inherit"
+                aria-label="Open drawer"
+                onClick={this.handleDrawerOpen}
+                className={classNames(
+                  classes.menuButton,
+                  this.state.drawerOpen && classes.hide
+                )}
+              >
+                <MenuIcon />
+              </IconButton>
+
               <div className={style.search}>
                 <SearchInput className={style.SearchInput} onChange={this.searchUpdated} />
-                <a href="#">
-                  <div className={style.SearchIcon} />
-                </a>
+                <div className={style.SearchIcon} />
               </div>
-            </Grid>
-            <Grid item xs={4} />
-            <Grid item xs={4}>
-              <button className={style.filter} onClick={() => this.searchUpdated("image")}>
-                <div className={style.FilterIcon}></div>
-              </button>
-            </Grid>
-          </Grid>
-        </div>
 
-        <div>
-          <Grid className={style.apps} container spacing={24}>
-            {installedApp}
-          </Grid>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            variant="permanent"
+            classes={{
+              paper: classNames(
+                classes.drawerPaper,
+                !this.state.drawerOpen && classes.drawerPaperClose
+              )
+            }}
+            open={this.state.drawerOpen}
+          >
+            <div className={classes.toolbar}>
+              <IconButton onClick={this.handleDrawerClose}>
+                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+              </IconButton>
+            </div>
+            <Divider />
+            <List><MailFolderListItems buttonClick={this.searchUpdated} /></List>
+            <Divider />
+          </Drawer>
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Grid className={style.apps} container spacing={24}>
+              {installedApp}
+            </Grid>
+          </main>
         </div>
-
         <div className={style.footer}>
-          <Grid className={style.foot} container spacing={24}>
-            <Grid item xs={3}>
-              <a onClick={() => this.searchUpdated("")}>
-                <img src="../src/image/home.png" />
-              </a>
-            </Grid>
-            <Grid item xs={3}>
-              {/* <a href="">
-                <img src="../src/image/fav.png" />
-              </a> */}
-            </Grid>
-            <Grid item xs={3}>
-              {/* <a href="#" onClick={this.refresh.bind(this)}>
-                <img src="../src/image/update.png" />
-              </a> */}
-            </Grid>
-            <Grid item xs={3}>
-              <DropTarget
-                targetKey="delete"
-                onDragEnter={this.changeTrashIconOnHover.bind(this)}
-                onDragLeave={this.changeTrashIconOnOut.bind(this)}
-              >
-                <img src={this.state.src} />
-              </DropTarget>
-            </Grid>
-          </Grid>
+          <div onClick={() => this.toggleTagsDrawer()}
+            className={classes.tagsButton}>
+            <p>Open Bottom</p>
+          </div>
+          <Drawer
+            className={classes.tags}
+            anchor="bottom"
+            open={this.state.bottom}
+            onClose={() => this.toggleTagsDrawer()}
+          >
+            <List>{ff}</List>
+            <Divider />
+            <button onClick={() => this.searchTag()}>Applay</button>
+          </Drawer>
+          <Footer buttonClick={this.searchUpdated} ref="footer" />
         </div>
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleClose.bind(this)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Are you sure that you want to delete this file ?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              You can't restore this file after you delete it
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose.bind(this)} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.delete.bind(this)} color="primary" autoFocus>
-              I'm sure
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog
-          open={this.state.spaceUsed}
-          onClose={this.handleClose.bind(this)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"There no enough space !!"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Please remove some files from your device
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose.bind(this)} color="primary">
-              got it
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog
-          open={this.state.rights}
-          onClose={this.handleClose.bind(this)}
-          aria-labelledby="scroll-dialog-title"
-        >
-          <DialogTitle id="scroll-dialog-title">
-            {"Rights"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac
-                facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum
-                at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus
-                sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum
-                nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur
-                et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras
-                mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-                lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
-                sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
-                consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-                lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
-                sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
-                consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-                lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
-                sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
-                consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-                lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
-                sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis
-                consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-                lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla
-                sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose.bind(this)} color="primary">
-              Disagree
-            </Button>
-            <Button onClick={this.sendData.bind(this)} color="primary" autoFocus>
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     );
   }
 }
+MainScreen.propTypes = {
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
+};
+export default withStyles(styles, { withTheme: true })(MainScreen);

@@ -3,10 +3,7 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    background-image: url('../image/thaki\ background.png');
-    background-repeat: no-repeat;
-    background-size: 50%;
-    background-position: center;
+
 }
 .serverContent {
     text-align: center;
@@ -14,6 +11,16 @@
 }
 .new{
     margin: 2%;
+}
+.new{
+    background-color:blue !important;
+    color:#cecece !important;
+}
+.new svg{
+    border-width: 0;
+    border-radius: 100%;
+    color:#cecece !important;
+
 }
 .head{
     height: 10%;
@@ -32,24 +39,26 @@
     padding: 0 !important;
 }
 .search{
-    background-image: url('../image/searchField.png');
-    background-repeat: no-repeat;
-    background-size:100% 100%;
-    background-position:center;
-    width: 100%;
-    height: 28px;
+    background-color: #384a16;
+    width: 40%;
+    height: 25px;
     border: none;
     border-radius: 8px;
-    float: right;
-    margin: 4% 0;
+    position: absolute;
+    right: 20px;
+}
+.search *{
+    box-sizing:border-box;
 }
 .SearchInput{
+    border-color: #384a16;
+    border-width: 2px;
+    border-style: solid;
     border-radius: 8px 0 0 8px !important;
-    height: 86% !important;
+    height: 100% !important;
     width: 81% !important;
-    margin: 1% !important;
     float: left !important;
-    background-color:transparent; 
+    background-color:white; 
 }
 input:focus{
     outline: none;
@@ -74,11 +83,15 @@ p{
 .SearchIcon{
     width: 17%;
     height: 100%;
+    border-color: #384a16;
+    border-width: 2px 2px 2px 0;
+    border-style: solid;
+    border-radius: 0 8px 8px 0 !important;
+    background-color: #384a16;
     background-image: url('../image/search.png');
     background-repeat: no-repeat;
-    background-size:80%;
     background-position:center;
-    background-size: 60%;
+    background-size: 20%;
     background-position: center;
     float: right;
 }
@@ -122,12 +135,17 @@ p{
     height: 15%;
     position: absolute;
     bottom: 0;
-    background-image: linear-gradient(#b1d67f, #7a992f);
+    text-align: center;
 }
 .foot{
+    background-color: #6ac55b;
     margin: 0 !important;
     height: 100%;
     padding: 0 7%;
     width: 100% !important;
     text-align: center;
+}
+
+.foot img{
+    size: auto;
 }

@@ -1,3 +1,59 @@
 {
-    "app": []
+    "app": [
+        {
+            "name": "spacetoon",
+            "image": "../../react-client/src/image/music.png",
+            "path": "./react-client/app/spacetoon.mp3",
+            "click": 0,
+            "categorie": "sound",
+            "tag": [
+                "entertainment",
+                "sound"
+            ]
+        },
+        {
+            "name": "Thaki Name Explanation – EDIT CLIPCHAMP.mp4",
+            "image": "../../react-client/src/image/video.png",
+            "path": "./react-client/app/Thaki Name Explanation – EDIT CLIPCHAMP.mp4",
+            "click": 0,
+            "categorie": "video",
+            "tag": [
+                "video",
+                "education"
+            ]
+        },
+        {
+            "name": "English_CD_V1",
+            "image": "../../react-client/src/image/html.png",
+            "path": "./react-client/app/English_CD_V1/index.html",
+            "click": 3,
+            "categorie": "html",
+            "tag": [
+                "html",
+                "education",
+                "e-elearning"
+            ]
+        },
+        {
+            "name": "Some text",
+            "image": "../../react-client/src/image/text.png",
+            "path": "./react-client/app/English_CD_V1/Some text.text",
+            "click": 0,
+            "categorie": "text",
+            "tag": [
+                "text",
+                "note"
+            ]
+        },
+        {
+            "name": "test",
+            "image": "../../react-client/src/image/html.png",
+            "path": "./react-client/app/test.html",
+            "click": 0,
+            "categorie": "html",
+            "tag": [
+                "education"
+            ]
+        }
+    ]
 }
